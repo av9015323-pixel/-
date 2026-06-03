@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- 
+       МЕТА-ТЕГИ И ЗАГОЛОВОК СТРАНИЦЫ
+       Базовые настройки браузера: кодировка, адаптивность, заголовок
+   -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capital Finance — Инвестиции и Вклады</title>
+
+  <!-- 
+       ПОДКЛЮЧЕНИЕ ШРИФТОВ
+       Playfair Display — заголовочный шрифт с засечками (классика)
+       EB Garamond — основной текстовый шрифт (читаемость)
+   -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* 
+       CSS-ПЕРЕМЕННЫЕ (ЦВЕТОВАЯ ПАЛИТРА)
+       Все цвета сайта заданы здесь — чёрно-белая классика
+     */
+    :root {
+      --black:      #0a0a0a;
+      --white:      #f5f5f0;
+      --gray-light: #e8e8e3;
+      --gray-mid:   #9a9a90;
+      --gray-dark:  #3a3a38;
+      --font-title: 'Playfair Display', Georgia, serif;
+      --font-body:  'EB Garamond', Georgia, serif;
+    }
+
+    /* 
+       СБРОС СТИЛЕЙ И БАЗОВЫЕ НАСТРОЙКИ
+       Убирает отступы по умолчанию, задаёт шрифт и цвет фона
+     */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--white);
+      color: var(--black);
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* 
+       НАВИГАЦИОННАЯ ПАНЕЛЬ
+       Фиксируется вверху экрана при прокрутке (position: fixed)
+       Логотип слева, ссылки на страницы справа
+     */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4rem;
+      height: 70px;
+      background: var(--black);
+      border-bottom: 1px solid var(--gray-dark);
+    }
+    .nav-logo {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--white);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .nav-logo span { color: var(--gray-mid); font-weight: 400; }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links button {
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--gray-mid);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0.3rem 0;
+      position: relative;
+      transition: color 0.2s;
+    }
+    /* Подчёркивание при наведении */
+    .nav-links button::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--white);
+      transition: width 0.3s;
+    }
+    .nav-links button:hover,
+    .nav-links button.active { color: var(--white); }
+    .nav-links button:hover::after,
+    .nav-links button.active::after { width: 100%; }
+
+    /* 
+       СТРАНИЦЫ (БЛОКИ)
+       Каждая «страница» — это div, который показывается/скрывается
+       через JavaScript. По умолчанию видна только главная.
+     */
+    .page { display: none; padding-top: 70px; }
+    .page.active { display: block; }
+
+    /* э
+       АНИМАЦИЯ ПОЯВЛЕНИЯ СТРАНИЦ
+       Плавный вход при переключении вкладок
+     */
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page.active { animation: pageIn 0.4s ease both; }
+
+    /* 
+       ГЕРОЙ-СЕКЦИЯ (ГЛАВНЫЙ ЭКРАН)
+       Тёмный фон, крупный заголовок, статистика справа
+     */
+    .hero {
+      min-height: calc(100vh - 70px);
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      padding: 5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Декоративные окружности на фоне */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -15%; right: -8%;
+      width: 550px; height: 550px;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 15%; right: 8%;
+      width: 280px; height: 280px;
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    /* Маленькая надпись над заголовком */
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 36px; height: 1px;
+      background: var(--gray-mid);
+    }
+    /* Главный заголовок героя */
+    .hero h1 {
+      font-family: var(--font-title);
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.05;
+      margin-bottom: 1.8rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--gray-mid); }
+    .hero-desc { color: var(--gray-mid); font-size: 1.05rem; margin-bottom: 2.5rem; max-width: 460px; }
+
+    /* Кнопки действий в герое */
+    .hero-actions { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+
+    /* 
+       ОБЩИЕ СТИЛИ КНОПОК
+       btn-dark — белая кнопка (на тёмном фоне)
+       btn-outline — прозрачная с рамкой
+       btn-black — чёрная кнопка (на светлом фоне)
+       btn-border — контурная на светлом фоне
+     */
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: all 0.22s;
+      text-decoration: none;
+    }
+    .btn-dark   { background: var(--white); color: var(--black); }
+    .btn-dark:hover { background: var(--gray-light); transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--white); border: 1px solid var(--gray-dark); }
+    .btn-outline:hover { border-color: var(--white); transform: translateY(-2px); }
+    .btn-black  { background: var(--black); color: var(--white); }
+    .btn-black:hover  { background: var(--gray-dark); transform: translateY(-2px); }
+    .btn-border { background: transparent; color: var(--black); border: 1px solid var(--gray-mid); }
+    .btn-border:hover { border-color: var(--black); transform: translateY(-2px); }
+
+    /* 
+       БЛОК СТАТИСТИКИ В ГЕРОЕ
+       Три карточки с цифрами справа от заголовка
+     */
+    .hero-stats { display: flex; flex-direction: column; gap: 1.8rem; }
+    .stat-card {
+      border: 1px solid var(--gray-dark);
+      padding: 1.8rem 2.2rem;
+    }
+    .stat-card:nth-child(2) { margin-left: 2.5rem; }
+    .stat-number {
+      font-family: var(--font-title);
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-top: 0.4rem;
+    }
+
+    /* 
+       СЕКЦИИ КОНТЕНТА
+       Светлые и тёмные чередующиеся блоки с отступами
+     */
+    .section {
+      padding: 6rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-wrap       { background: var(--white); }
+    .section-wrap-light { background: var(--gray-light); }
+    .section-wrap-dark  { background: var(--black); }
+
+    /* Заголовок секции */
+    .section-header { margin-bottom: 3.5rem; }
+    .section-title {
+      font-family: var(--font-title);
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .section-title-white { color: var(--white); }
+    .divider { width: 50px; height: 2px; background: var(--black); margin: 1.5rem 0; }
+    .divider-white { background: var(--gray-mid); }
+
+    /* 
+       ДВУХКОЛОНОЧНАЯ РАСКЛАДКА
+       Используется для «текст + блок» секций
+     */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    /* 
+       СЕТКА КАРТОЧЕК (3 КОЛОНКИ)
+       Карточки с инструментами/видами вкладов
+     */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--gray-light);
+      border: 2px solid var(--gray-light);
+    }
+    .card {
+      background: var(--white);
+      padding: 2.2rem 1.8rem;
+      position: relative;
+      transition: transform 0.25s;
+      overflow: hidden;
+    }
+    /* Полоска снизу при наведении */
+    .card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 3px;
+      background: var(--black);
+      transition: width 0.35s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .card:hover::before { width: 100%; }
+    .card-icon { font-size: 1.8rem; margin-bottom: 1.2rem; display: block; }
+    .card-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+    .card-text { font-size: 0.92rem; color: var(--gray-dark); line-height: 1.6; }
+
+    /* Тёмные карточки (на чёрном фоне) */
+    .cards-grid-dark { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .card-dark {
+      border: 1px solid var(--gray-dark);
+      padding: 2.2rem 1.8rem;
+      position: relative;
+      transition: all 0.25s;
+    }
+    .card-dark:hover { border-color: var(--gray-mid); transform: translateY(-4px); }
+    .card-dark .card-title { color: var(--white); }
+    .card-dark .card-text  { color: var(--gray-mid); }
+    .card-num {
+      font-family: var(--font-title);
+      font-size: 4rem;
+      font-weight: 900;
+      color: rgba(255,255,255,0.06);
+      position: absolute;
+      top: 0.8rem; right: 1.2rem;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* 
+       ТАБЛИЦА СРАВНЕНИЯ
+       Заголовки на чёрном фоне, строки чередуются при наведении
+     */
+    .table-wrap { overflow-x: auto; margin-top: 2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+    th {
+      text-align: left;
+      padding: 1rem 1.4rem;
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 0.95rem 1.4rem;
+      border-bottom: 1px solid var(--gray-light);
+      color: var(--gray-dark);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--gray-light); }
+    .rate { color: var(--black); font-weight: 600; font-family: var(--font-title); }
+    /* Бейджи-теги в таблице */
+    .tag {
+      display: inline-block;
+      padding: 0.18em 0.65em;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--white);
+    }
+    .tag-out {
+      background: transparent;
+      border: 1px solid var(--gray-mid);
+      color: var(--gray-dark);
+    }
+
+    /* 
+       БЛОК-ЦИТАТА
+       Левая чёрная полоса, курсив, имя цитируемого
+     */
+    .blockquote {
+      border-left: 3px solid var(--black);
+      padding: 1.8rem 2.2rem;
+      background: var(--gray-light);
+      margin: 2.5rem 0;
+    }
+    .blockquote p {
+      font-family: var(--font-title);
+      font-size: 1.4rem;
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .blockquote cite {
+      display: block;
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      font-style: normal;
+    }
+
+    /* 
+       ТАЙМЛАЙН (ВЕРТИКАЛЬНЫЙ СПИСОК ШАГОВ)
+       Вертикальная линия слева, точки-маркеры
+     */
+    .timeline { list-style: none; position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: var(--gray-dark);
+    }
+    .timeline li { padding: 0 0 2.5rem 2.8rem; position: relative; }
+    .timeline li::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: 8px;
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--gray-mid);
+    }
+    .tl-step {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 0.3rem;
+    }
+    .tl-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      margin-bottom: 0.4rem;
+    }
+    .tl-text { font-size: 0.92rem; color: var(--gray-dark); }
+
+    /* Тёмный таймлайн (на чёрном фоне) */
+    .timeline-dark::before { background: var(--gray-dark); }
+    .timeline-dark li::before { background: var(--black); border-color: var(--gray-mid); }
+    .timeline-dark .tl-title { color: var(--white); }
+    .timeline-dark .tl-text  { color: var(--gray-mid); }
+
+    /* 
+       ИНДИКАТОР РИСКА
+       Пять делений, закрашенные = уровень риска
+*/
+    .risk-bar {
+      display: flex;
+      gap: 3px;
+      margin: 0.6rem 0 0.2rem;
+    }
+    .risk-bar span {
+      flex: 1;
+      height: 5px;
+      background: var(--gray-light);
+      border-radius: 1px;
+    }
+    .risk-bar span.on { background: var(--black); }
+    .risk-lbl { font-size: 0.73rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-mid); }
+
+    /* 
+       ШАПКА ВНУТРЕННЕЙ СТРАНИЦЫ (PAGE HERO)
+       Тёмный фон с большим декоративным текстом позади
+    
+ */
+    .page-hero {
+      background: var(--black);
+      padding: 5rem 4rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: attr(data-bg);
+      position: absolute;
+      right: -1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-title);
+      font-size: 18vw;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      white-space: nowrap;
+      user-select: none;
+      line-height: 1;
+    }
+    .page-hero-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .page-hero .eyebrow { margin-bottom: 1.2rem; }
+    .page-hero h1 {
+      font-family: var(--font-title);
+      font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.05;
+      max-width: 680px;
+    }
+    .page-hero p {
+      color: var(--gray-mid);
+      font-size: 1.05rem;
+      max-width: 580px;
+      margin-top: 1.2rem;
+    }
+
+    
+       ИНФОРМАЦИОННЫЕ БЛОКИ (НА СВЕТЛОМ ФОНЕ)
+       Обводной прямоугольник, пункты списка
+     */
+    .info-box {
+      border: 1px solid var(--gray-light);
+      padding: 2rem 2.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-box-title {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .info-box p, .info-box li {
+      font-size: 0.92rem;
+      color: var(--gray-dark);
+      line-height: 1.65;
+    }
+    .info-box ul { padding-left: 1.2rem; }
+    .info-box li { margin-bottom: 0.4rem; }
+
+    /* Тёмный info-box */
+    .info-box-dark {
+      background: var(--black);
+      border: none;
+      padding: 2rem 2.2rem;
+    }
+    .info-box-dark .info-box-title { color: var(--white); }
+    .info-box-dark p { color: var(--gray-mid); }
+
+    /* 
+       СЕКЦИЯ-ПРИЗЫВ К ДЕЙСТВИЮ (CTA)
+       По центру, кнопки рядом
+     */
+    .cta-section {
+      text-align: center;
+      padding: 6rem 4rem;
+      background: var(--white);
+    }
+    .cta-section .section-title { margin: 1rem 0 1.2rem; }
+    .cta-section p { color: var(--gray-dark); margin-bottom: 2.5rem; font-size: 1.05rem; max-width: 620px; margin-left: auto; margin-right: auto; }
+    .cta-btns { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+
+    /* 
+       ТЁМНАЯ ПОЛОСА CTA (СНИЗУ СТРАНИЦ)
+    */
+    .dark-strip {
+      background: var(--black);
+      padding: 3.5rem 4rem;
+    }
+    .dark-strip-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .dark-strip h3 {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+      flex: 1;
+      min-width: 220px;
+    }
+    .dark-strip p { color: var(--gray-mid); font-size: 0.95rem; flex: 2; min-width: 280px; }
+
+    /* 
+       ФУТЕР
+       Три колонки: описание, разделы, темы
+     */
+    footer {
+      background: var(--black);
+      border-top: 1px solid var(--gray-dark);
+      padding: 4rem;
+      color: var(--gray-mid);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+    }
+    .footer-brand {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+    }
+    .footer-desc { font-size: 0.88rem; line-height: 1.7; }
+    .footer-col h4 {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 0.5rem; }
+    /* Кнопки в футере как ссылки */
+    .footer-col button {
+      background: none;
+      border: none;
+      color: var(--gray-mid);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .footer-col button:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2.5rem auto 0;
+      padding-top: 2rem;
+      border-top: 1px solid var(--gray-dark);
+      font-size: 0.78rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    
+    
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links button { font-size: 0.8rem; }
+      .hero { padding: 3rem 1.5rem; }
+      .hero-inner, .two-col { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-stats { flex-direction: row; flex-wrap: wrap; }
+      .stat-card:nth-child(2) { margin-left: 0; }
+      .cards-grid, .cards-grid-dark { grid-template-columns: 1fr 1fr; }
+      .section { padding: 4rem 1.5rem; }
+      .section-wrap-light .section,
+      .section-wrap-dark .section { padding: 4rem 1.5rem; }
+      .page-hero { padding: 3.5rem 1.5rem 3rem; }
+      .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .footer { padding: 2.5rem 1.5rem; }
+      .footer-bottom { flex-direction: column; }
+      .dark-strip { padding: 2.5rem 1.5rem; }
+      .cta-section { padding: 4rem 1.5rem; }
+    }
+    @media (max-width: 600px) {
+      .cards-grid, .cards-grid-dark { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- э
+     НАВИГАЦИЯ
+     Кнопки переключают страницы через JavaScript-функцию showPage()
+     Активная кнопка получает класс .active (подсветка)
+-->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Capital <span>Finance</span></div>
+  <ul class="nav-links">
+    <li><button id="nav-home"        class="active"  onclick="showPage('home')">Главная</button></li>
+    <li><button id="nav-investments"               onclick="showPage('investments')">Инвестиции</button></li>
+    <li><button id="nav-deposits"                  onclick="showPage('deposits')">Вклады</button></li>
+  </ul>
+</nav>
+
+
+<!-- 
+                       СТРАНИЦА 1 — ГЛАВНАЯ                       
+      -->
+<div id="page-home" class="page active">
+
+  <!-- ── ГЕРОЙ: ГЛАВНЫЙ ЭКРАН ── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <!-- Левая часть: текст и кнопки -->
+      <div>
+        <div class="eyebrow">Финансовая грамотность · 2025</div>
+        <h1>Капитал, который <em>работает</em> на вас</h1>
+        <p class="hero-desc">
+          Разбираемся в инвестициях, банковских вкладах и инструментах сохранения
+          капитала — чётко, честно и без лишних слов.
+        </p>
+        <!-- Кнопки перехода на другие страницы -->
+        <div class="hero-actions">
+          <button class="btn btn-dark"    onclick="showPage('investments')">Об инвестициях</button>
+          <button class="btn btn-outline" onclick="showPage('deposits')">О вкладах</button>
+        </div>
+      </div>
+
+      <!-- Правая часть: статистические карточки -->
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-number">16%</div>
+          <div class="stat-label">Ключевая ставка ЦБ РФ (2025)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">₽47 трлн</div>
+          <div class="stat-label">Вклады граждан в банках России</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3,4 млн</div>
+          <div class="stat-label">Активных розничных инвесторов</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ВВЕДЕНИЕ: ЗАЧЕМ УПРАВЛЯТЬ ФИНАНСАМИ ── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="two-col">
+        <div>
+          <div class="eyebrow">О проекте</div>
+          <h2 class="section-title">Зачем нужен грамотный подход к финансам?</h2>
+          <div class="divider"></div>
+          <p style="color:var(--gray-dark);margin-bottom:1.2rem">
+            Инфляция ежегодно обесценивает сбережения, хранящиеся «под матрасом».
+            Даже простой банковский вклад способен защитить капитал, а продуманный
+            портфель инвестиций — приумножить его.
+          </p>
+          <p style="color:var(--gray-dark)">
+            Наша цель — предоставить актуальную, понятную информацию о доступных
+            финансовых инструментах: от государственных облигаций до ETF-фондов.
+          </p>
+        </div>
+        <div>
+          <div class="blockquote">
+            <p>«Не кладите все яйца в одну корзину» — принцип диверсификации, 
+            известный веками, сегодня актуален как никогда.</p>
+            <cite>— Основа грамотного инвестора</cite>
+          </div>
+          <p style="color:var(--gray-dark);font-size:0.95rem">
+            Диверсификация портфеля, грамотное распределение рисков и долгосрочный
+            горизонт планирования — три кита успешного управления личными финансами.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── СЕТКА ИНСТРУМЕНТОВ: 6 КАРТОЧЕК ── -->
+  <div class="section-wrap-light">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow">Финансовые инструменты</div>
+        <h2 class="section-title">Что выбрать для своих целей</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="card"><span class="card-icon">📈</span><div class="card-title">Акции</div><p class="card-text">Доля в компании. Высокая потенциальная доходность с пропорциональным риском. Подходят для горизонта от 3 лет.</p></div>
+        <div class="card"><span class="card-icon">🏛</span><div class="card-title">Облигации</div><p class="card-text">Долговые бумаги с фиксированным купоном. ОФЗ — наиболее надёжный инструмент для консервативного инвестора.</p></div>
+        <div class="card"><span class="card-icon">📦</span><div class="card-title">ETF-фонды</div><p class="card-text">Биржевые фонды, следующие за индексом. Широкая диверсификация при минимальных вложениях.</p></div>
+        <div class="card"><span class="card-icon">🏦</span><div class="card-title">Банковский вклад</div><p class="card-text">Классический инструмент сохранения средств. Страховое покрытие АСВ до 1,4 млн рублей.</p></div>
+        <div class="card"><span class="card-icon">💰</span><div class="card-title">Накопительный счёт</div><p class="card-text">Гибкая альтернатива вкладу: пополнение и снятие в любой момент. Ставка — на ежедневный остаток.</p></div>
+        <div class="card"><span class="card-icon">🏠</span><div class="card-title">Недвижимость</div><p class="card-text">Долгосрочное вложение с потенциалом роста стоимости и рентного дохода. Требует значительного капитала.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── СРАВНИТЕЛЬНАЯ ТАБЛИЦА ── -->
+  <div class="section-wrap-dark">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow" style="color:var(--gray-mid)">Быстрое сравнение</div>
+        <h2 class="section-title section-title-white">Инвестиции vs Вклады</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Критерий</th>
+              <th>Банковский вклад</th>
+              <th>Облигации (ОФЗ)</th>
+              <th>Акции / ETF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Доходность</td><td><span class="rate">14–18%</span></td><td><span class="rate">15–17%</span></td><td><span class="rate">не гарантирована</span></td></tr>
+            <tr><td>Риск</td><td><span class="tag">Минимальный</span></td><td><span class="tag tag-out">Низкий</span></td><td><span class="tag tag-out">Средний — высокий</span></td></tr>
+            <tr><td>Ликвидность</td><td>Низкая (штраф при досрочном)</td><td>Высокая (биржа)</td><td>Высокая (биржа)</td></tr>
+            <tr><td>Страхование</td><td>Да, АСВ до 1,4 млн ₽</td><td>Нет</td><td>Нет</td></tr>
+            <tr><td>Порог входа</td><td>от 1 000 ₽</td><td>от 1 000 ₽</td><td>от 1 ₽ (ETF)</td></tr>
+            <tr><td>Налог</td><td>13% сверх лимита</td><td>13% с купона</td><td>13% с прибыли</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CTA: ПРИЗЫВ К ДЕЙСТВИЮ ── -->
+  <div class="cta-section">
+    <div class="eyebrow" style="justify-content:center">Начните сегодня</div>
+    <h2 class="section-title">Изучите детали каждого инструмента</h2>
+    <p>Перейдите в соответствующий раздел, чтобы глубже разобраться в инвестиционных стратегиях или выбрать оптимальный вклад.</p>
+    <div class="cta-btns">
+      <button class="btn btn-black" onclick="showPage('investments')">Про инвестиции →</button>
+      <button class="btn btn-border" onclick="showPage('deposits')">Про вклады →</button>
+    </div>
+  </div>
+
+</div><!-- /page-home -->
+
+
+<!-- 
+              СТРАНИЦА 2 — ИНВЕСТИЦИИ                        
+      -->
+<div id="page-investments" class="page">
+
+  <!-- ── ШАПКА СТРАНИЦЫ ── -->
+  <div class="page-hero" data-bg="INVEST">
+    <div class="page-hero-inner">
+      <div class="eyebrow">Раздел — Инвестиции</div>
+      <h1>Инвестиции: стратегии и инструменты</h1>
+      <p>Как формировать портфель, выбирать активы и управлять рисками в условиях российского рынка.</p>
+    </div>
+  </div>
+
+  <!-- ── ВВЕДЕНИЕ + ЦИТАТА ── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="two-col">
+        <div>
+          <div class="eyebrow">Основы</div>
+          <h2 class="section-title">Что такое инвестирование?</h2>
+          <div class="divider"></div>
+          <p style="color:var(--gray-dark);margin-bottom:1.2rem">
+            Инвестирование — вложение денег в активы с целью получения дохода в будущем.
+            В отличие от спекуляции, инвестиции ориентированы на долгосрочный горизонт
+            и фундаментальную ценность актива.
+          </p>
+          <p style="color:var(--gray-dark);margin-bottom:1.2rem">
+            Ключевой принцип: время на рынке важнее попыток угадать его направление.
+            Регулярные вложения по стратегии усреднения (DCA) снижают влияние волатильности.
+          </p>
+          <p style="color:var(--gray-dark)">
+            Инвестор рискует потерять часть вложенных средств, однако при грамотной
+            диверсификации этот риск существенно снижается.
+          </p>
+        </div>
+        <div>
+          <div class="blockquote">
+            <p>«Самые лучшие инвестиции — те, которые держатся долго, даже когда рынок падает.»</p>
+            <cite>— Принцип долгосрочного инвестора</cite>
+          </div>
+          <!-- Правило 72 в info-box -->
+          <div class="info-box" style="margin-top:0">
+            <div class="info-box-title">Правило 72</div>
+            <p>Разделите 72 на годовую доходность, чтобы узнать, за сколько лет капитал удвоится.
+               При 12% — <strong>6 лет</strong>, при 18% — всего <strong>4 года</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── КАРТОЧКИ ИНСТРУМЕНТОВ С УРОВНЕМ РИСКА ── -->
+  <div class="section-wrap-light">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow">Виды активов</div>
+        <h2 class="section-title">Основные инвестиционные инструменты</h2>
+      </div>
+      <div class="cards-grid">
+
+        <!-- Карточка: Акции -->
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <div class="card-title">Акции российских компаний</div>
+          <p class="card-text">Голубые фишки (Сбер, Лукойл, Газпром) — высокая ликвидность. Дивидендная доходность 4–12% годовых дополнительно к курсовому росту.</p>
+          <div style="margin-top:1.2rem">
+            <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:0.3rem">Уровень риска</div>
+            <div class="risk-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+            <div class="risk-lbl">Средний</div>
+          </div>
+        </div>
+
+        <!-- Карточка: ОФЗ -->
+        <div class="card">
+          <span class="card-icon">🏛</span>
+          <div class="card-title">ОФЗ (гособлигации)</div>
+          <p class="card-text">Облигации федерального займа — долговые бумаги Минфина РФ. Наиболее надёжный инструмент. Купон выплачивается 2–4 раза в год.</p>
+          <div style="margin-top:1.2rem">
+            <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:0.3rem">Уровень риска</div>
+            <div class="risk-bar"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+            <div class="risk-lbl">Минимальный</div>
+          </div>
+        </div>
+
+        <!-- Карточка: БПИФ / ETF -->
+        <div class="card">
+          <span class="card-icon">📦</span>
+          <div class="card-title">БПИФ / ETF-фонды</div>
+          <p class="card-text">Биржевые фонды следуют за индексом. Широкая диверсификация при вложениях от 1 ₽. Комиссия управляющей компании — 0,5–1,5% в год.</p>
+          <div style="margin-top:1.2rem">
+            <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:0.3rem">Уровень риска</div>
+            <div class="risk-bar"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+            <div class="risk-lbl">Низкий — средний</div>
+          </div>
+        </div>
+
+        <!-- Карточка: Корп. облигации -->
+        <div class="card">
+          <span class="card-icon">🏢</span>
+          <div class="card-title">Корпоративные облигации</div>
+          <p class="card-text">Доходность 15–22% — выше ОФЗ. Риск зависит от кредитного рейтинга эмитента. Для тех, кто ищет баланс доходности и надёжности.</p>
+          <div style="margin-top:1.2rem">
+            <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:0.3rem">Уровень риска</div>
+            <div class="risk-bar"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+            <div class="risk-lbl">Низкий — средний</div>
+          </div>
+        </div>
+
+        <!-- Карточка: Золото -->
+        <div class="card">
+          <span class="card-icon">🪙</span>
+          <div class="card-title">Золото и металлы</div>
+          <p class="card-text">Защитный актив в периоды нестабильности. Доступно через ОМС, БПИФ на золото или физические слитки. Не приносит купон.</p>
+          <div style="margin-top:1.2rem">
+            <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:0.3rem">Уровень риска</div>
+            <div class="risk-bar"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+            <div class="risk-lbl">Средний</div>
+          </div>
+        </div>
+
+        <!-- Карточка: ВДО -->
+        <div class="card">
+          <span class="card-icon">🔥</span>
+          <div class="card-title">Высокодоходные облигации</div>
+          <p class="card-text">ВДО малых компаний с доходностью 22–30%+. Высокий риск дефолта. Только для опытных инвесторов с диверсифицированным портфелем.</p>
+          <div style="margin-top:1.2rem">
+            <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:0.3rem">Уровень риска</div>
+            <div class="risk-bar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+            <div class="risk-lbl">Очень высокий</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── СТРАТЕГИИ ИНВЕСТИРОВАНИЯ (3 ТЁМНЫЕ КАРТОЧКИ) ── -->
+  <div class="section-wrap-dark">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow" style="color:var(--gray-mid)">Подходы</div>
+        <h2 class="section-title section-title-white">Стратегии инвестирования</h2>
+      </div>
+      <div class="cards-grid-dark">
+        <div class="card-dark"><div class="card-num">01</div><div class="card-title">Пассивное инвестирование</div><p class="card-text">Покупка индексных фондов и долгосрочное удержание без попыток обыграть рынок. Минимум действий, минимум издержек. Большинство активных управляющих проигрывают индексу.</p></div>
+        <div class="card-dark"><div class="card-num">02</div><div class="card-title">Дивидендная стратегия</div><p class="card-text">Портфель из акций стабильных дивидендных плательщиков. Создаёт регулярный денежный поток. Подходит для тех, кто хочет получать пассивный доход без продажи активов.</p></div>
+        <div class="card-dark"><div class="card-num">03</div><div class="card-title">Усреднение (DCA)</div><p class="card-text">Регулярная покупка фиксированной суммы активов вне зависимости от цены. Автоматически покупает больше при падении. Снижает влияние волатильности.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── КАК НАЧАТЬ: ПОШАГОВЫЙ ПЛАН ── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow">Пошаговый план</div>
+        <h2 class="section-title">Как начать инвестировать</h2>
+      </div>
+      <div class="two-col">
+        <!-- Таймлайн шагов -->
+        <ul class="timeline">
+          <li>
+            <div class="tl-step">Шаг 1</div>
+            <div class="tl-title">Создайте финансовую подушку</div>
+            <p class="tl-text">3–6 месячных расходов на банковском вкладе или накопительном счёте. Защита от непредвиденных ситуаций без продажи инвестиций.</p>
+          </li>
+          <li>
+            <div class="tl-step">Шаг 2</div>
+            <div class="tl-title">Откройте брокерский счёт / ИИС</div>
+            <p class="tl-text">ИИС даёт налоговый вычет 13–15% от суммы пополнения. Максимум вычета — 52 000–60 000 ₽ в год.</p>
+          </li>
+          <li>
+            <div class="tl-step">Шаг 3</div>
+            <div class="tl-title">Определите риск-профиль</div>
+            <p class="tl-text">Горизонт инвестирования, размер капитала, устойчивость к просадкам — всё это определяет долю акций и облигаций.</p>
+          </li>
+          <li>
+            <div class="tl-step">Шаг 4</div>
+            <div class="tl-title">Начните с широкого рынка</div>
+            <p class="tl-text">Первые вложения — в индексные БПИФ на Московскую биржу и ОФЗ. Затем постепенно добавляйте отдельные бумаги.</p>
+          </li>
+        </ul>
+        <!-- Налоговые льготы и предупреждение -->
+        <div>
+          <div class="info-box">
+            <div class="info-box-title">Налоговые льготы для инвесторов</div>
+            <ul>
+              <li><strong>ИИС тип А</strong> — вычет 13% от суммы пополнения. Максимум 52 000 ₽ при взносе 400 000 ₽.</li>
+              <li><strong>ИИС тип Б</strong> — освобождение от налога на прибыль. Выгоден при активной торговле.</li>
+              <li><strong>Льгота 3 лет</strong> — при удержании бумаги более 3 лет вычет до 3 млн ₽ прибыли в год.</li>
+            </ul>
+          </div>
+          <div class="info-box-dark">
+            <div class="info-box-title">⚠ Важно помнить</div>
+            <p>Инвестиции не застрахованы. Прошлая доходность не гарантирует будущих результатов. Никогда не инвестируйте средства, которые могут понадобиться в ближайшие 1–2 года.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ПЕРЕХОД НА СТРАНИЦУ ВКЛАДОВ ── -->
+  <div class="dark-strip">
+    <div class="dark-strip-inner">
+      <h3>Ещё не определились с инструментом?</h3>
+      <p>Изучите раздел о банковских вкладах — надёжном и застрахованном способе сохранить капитал без биржевых рисков.</p>
+      <button class="btn btn-dark" onclick="showPage('deposits')">Перейти к вкладам →</button>
+    </div>
+  </div>
+
+</div><!-- /page-investments -->
+
+
+<!-- 
+                    СТРАНИЦА 3 — ВКЛАДЫ                           
+      -->
+<div id="page-deposits" class="page">
+
+  <!-- ── ШАПКА СТРАНИЦЫ ── -->
+  <div class="page-hero" data-bg="ВКЛАД">
+    <div class="page-hero-inner">
+      <div class="eyebrow">Раздел — Банковские вклады</div>
+      <h1>Вклады: надёжность и доход</h1>
+      <p>Всё о банковских вкладах, накопительных счетах и системе страхования вкладов в России.</p>
+    </div>
+  </div>
+
+  <!-- ── ЧТО ТАКОЕ ВКЛАД + КЛЮЧЕВЫЕ ЦИФРЫ ── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="two-col">
+        <div>
+          <div class="eyebrow">Основы</div>
+          <h2 class="section-title">Банковский вклад: как это работает</h2>
+          <div class="divider"></div>
+          <p style="color:var(--gray-dark);margin-bottom:1.2rem">
+            Вклад — договор между вкладчиком и банком, по которому банк принимает деньги
+            и обязуется вернуть их с процентами. Банк использует ваши средства для выдачи кредитов.
+          </p>
+          <p style="color:var(--gray-dark);margin-bottom:1.2rem">
+            Ставка по вкладу зависит от ключевой ставки ЦБ РФ, срока и условий
+            пополнения / снятия. Чем жёстче условия — тем выше ставка.
+          </p>
+          <p style="color:var(--gray-dark)">
+            В отличие от инвестиций, вклад гарантирует возврат суммы и обещанных
+            процентов — в пределах страхового лимита АСВ.
+          </p>
+        </div>
+        <!-- Плитка с цифрами -->
+        <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--gray-light)">
+            <div style="background:var(--black);padding:2rem;text-align:center">
+              <div style="font-family:var(--font-title);font-size:2.2rem;color:var(--white);font-weight:700">1,4 млн</div>
+              <div style="font-size:0.73rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray-mid);margin-top:0.4rem">Страховое покрытие АСВ</div>
+            </div>
+            <div style="background:var(--white);padding:2rem;text-align:center;border:1px solid var(--gray-light)">
+              <div style="font-family:var(--font-title);font-size:2.2rem;color:var(--black);font-weight:700">16%</div>
+              <div style="font-size:0.73rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray-mid);margin-top:0.4rem">Ключевая ставка ЦБ 2025</div>
+            </div>
+          </div>
+          <div style="background:var(--gray-light);padding:2rem;text-align:center;margin-top:2px">
+            <div style="font-family:var(--font-title);font-size:2.2rem;color:var(--black);font-weight:700">до 21%</div>
+            <div style="font-size:0.73rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray-mid);margin-top:0.4rem">Максимальные ставки по вкладам (2025)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ВИДЫ ВКЛАДОВ (6 КАРТОЧЕК) ── -->
+  <div class="section-wrap-light">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow">Классификация</div>
+        <h2 class="section-title">Виды банковских вкладов</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="card"><span class="card-icon">🔒</span><div class="card-title">Срочный вклад</div><p class="card-text">Деньги размещаются на фиксированный срок. Досрочное изъятие влечёт потерю процентов. Предлагает максимальную ставку среди всех вкладов.</p></div>
+        <div class="card"><span class="card-icon">📂</span><div class="card-title">До востребования</div><p class="card-text">Средства доступны в любой момент. Ставка минимальная — 0,1–1% годовых. Для оперативного резерва, не сбережений.</p></div>
+        <div class="card"><span class="card-icon">➕</span><div class="card-title">Пополняемый вклад</div><p class="card-text">Позволяет вносить дополнительные суммы в течение срока. Ставка немного ниже. Удобен при регулярном накоплении.</p></div>
+        <div class="card"><span class="card-icon">💳</span><div class="card-title">Накопительный счёт</div><p class="card-text">Не вклад в строгом смысле, но страхуется АСВ. Пополнение и снятие в любое время. Ставка 12–18%, на ежедневный остаток.</p></div>
+        <div class="card"><span class="card-icon">👴</span><div class="card-title">Пенсионный вклад</div><p class="card-text">Специальный продукт для пенсионеров. Как правило, повышенная ставка и льготные условия досрочного снятия части средств.</p></div>
+        <div class="card"><span class="card-icon">🔄</span><div class="card-title">Мультивалютный вклад</div><p class="card-text">Хранение в нескольких валютах с конвертацией без потери процентов. Актуален при необходимости валютной диверсификации.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ТАБЛИЦА СТАВОК ── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow">Ориентир</div>
+        <h2 class="section-title">Актуальные ставки по вкладам (2025)</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Срок</th>
+              <th>Вклад (срочный)</th>
+              <th>С пополнением</th>
+              <th>Накопительный счёт</th>
+              <th>Условия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1 месяц</td>  <td><span class="rate">17–19%</span></td><td><span class="rate">14–16%</span></td><td><span class="rate">14–18%</span></td><td><span class="tag tag-out">Онлайн</span></td></tr>
+            <tr><td>3 месяца</td> <td><span class="rate">18–20%</span></td><td><span class="rate">15–17%</span></td><td><span class="rate">14–18%</span></td><td><span class="tag tag-out">Онлайн</span></td></tr>
+            <tr><td>6 месяцев</td><td><span class="rate">19–21%</span></td><td><span class="rate">16–18%</span></td><td>—</td><td><span class="tag">Топ ставка</span></td></tr>
+            <tr><td>1 год</td>    <td><span class="rate">17–19%</span></td><td><span class="rate">14–16%</span></td><td>—</td><td><span class="tag tag-out">Онлайн</span></td></tr>
+            <tr><td>2–3 года</td> <td><span class="rate">13–16%</span></td><td><span class="rate">12–14%</span></td><td>—</td><td><span class="tag tag-out">Отделение</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--gray-mid);font-size:0.8rem;margin-top:0.8rem;font-style:italic">
+        * Ставки носят ориентировочный характер и могут отличаться в зависимости от банка и суммы.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── СИСТЕМА СТРАХОВАНИЯ АСВ ── -->
+  <div class="section-wrap-dark">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow" style="color:var(--gray-mid)">Защита</div>
+        <h2 class="section-title section-title-white">Система страхования вкладов (АСВ)</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <p style="color:var(--gray-mid);margin-bottom:1.5rem;font-size:1.05rem">
+            Агентство по страхованию вкладов гарантирует возврат средств при отзыве
+            лицензии у банка или его банкротстве.
+          </p>
+          <div style="display:grid;gap:1.5rem">
+            <div class="card-dark">
+              <div class="card-num">₽</div>
+              <div class="card-title">До 1 400 000 ₽</div>
+              <p class="card-text">Базовый лимит страхового покрытия на одного вкладчика в одном банке (с 2014 года).</p>
+            </div>
+            <div class="card-dark">
+              <div class="card-num">₽₽</div>
+              <div class="card-title">До 10 000 000 ₽</div>
+              <p class="card-text">Повышенный лимит при особых обстоятельствах: продажа жилья, наследство, маткапитал.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Правила АСВ в виде таймлайна -->
+        <ul class="timeline timeline-dark">
+          <li>
+            <div class="tl-step">Правило 1</div>
+            <div class="tl-title">Один банк — один лимит</div>
+            <p class="tl-text">Если несколько счетов в одном банке, лимит АСВ применяется совокупно — 1,4 млн ₽ на всё.</p>
+          </li>
+          <li>
+            <div class="tl-step">Правило 2</div>
+            <div class="tl-title">Разные банки — разные лимиты</div>
+            <p class="tl-text">При сумме выше 1,4 млн ₽ — разделите её между несколькими банками для полного покрытия.</p>
+          </li>
+          <li>
+            <div class="tl-step">Правило 3</div>
+            <div class="tl-title">Только участники системы</div>
+            <p class="tl-text">Проверяйте участие банка в системе АСВ перед открытием — реестр доступен на сайте АСВ.</p>
+          </li>
+          <li>
+            <div class="tl-step">Правило 4</div>
+            <div class="tl-title">Проценты тоже страхуются</div>
+            <p class="tl-text">Накопленные проценты входят в сумму страхового возмещения, если не превышен общий лимит.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── КАК ВЫБРАТЬ ВКЛАД + НАЛОГ ── -->
+  <div class="section-wrap">
+    <div class="section">
+      <div class="section-header">
+        <div class="eyebrow">Советы</div>
+        <h2 class="section-title">Как выбрать вклад</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="blockquote">
+            <p>«Лучший вклад — тот, что соответствует вашим целям и срокам, а не просто имеет высшую ставку.»</p>
+            <cite>— Принцип выбора вклада</cite>
+          </div>
+          <p style="color:var(--gray-dark);margin-top:1.5rem">
+            Перед открытием вклада определитесь: когда могут понадобиться деньги?
+            Если горизонт неопределён — накопительный счёт предпочтительнее срочного.
+          </p>
+        </div>
+        <!-- Чек-лист выбора -->
+        <div class="info-box">
+          <div class="info-box-title">Чек-лист при открытии вклада</div>
+          <ul>
+            <li>✓ Проверить банк в реестре участников АСВ</li>
+            <li>✓ Сравнить реальную ставку (не только рекламную)</li>
+            <li>✓ Уточнить условия досрочного закрытия</li>
+            <li>✓ Проверить, куда начисляются проценты</li>
+            <li>✓ Узнать минимальную сумму пополнения / снятия</li>
+            <li>✓ Учесть налог на процентный доход (НДФЛ 13%)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── НАЛОГ НА ВКЛАДЫ ── -->
+  <div class="dark-strip">
+    <div class="dark-strip-inner">
+      <h3>Налог на доход по вкладам</h3>
+      <p>Необлагаемый минимум: <strong style="color:var(--white)">1 млн ₽ × ключевая ставка</strong>. При ставке 16% — 160 000 ₽ в год без налога. Сверх этой суммы — НДФЛ 13%. ФНС рассчитывает автоматически, декларацию подавать не нужно.</p>
+      <button class="btn btn-dark" onclick="showPage('investments')">Сравнить с инвестициями →</button>
+    </div>
+  </div>
+
+</div><!-- /page-deposits -->
+
+
+<!-- 
+     ФУТЕР
+     Показывается на всех страницах (вне блоков .page)
+     Три колонки: описание, разделы, темы
+-->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Capital Finance</div>
+      <p class="footer-desc">Независимый ресурс о личных финансах, инвестициях и вкладах. Помогаем принимать взвешенные финансовые решения.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Разделы</h4>
+      <ul>
+        <li><button onclick="showPage('home')">Главная</button></li>
+        <li><button onclick="showPage('investments')">Инвестиции</button></li>
+        <li><button onclick="showPage('deposits')">Вклады</button></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Темы</h4>
+      <ul>
+        <li><button onclick="showPage('investments')">Акции и облигации</button></li>
+        <li><button onclick="showPage('investments')">ETF-фонды</button></li>
+        <li><button onclick="showPage('deposits')">Банковские вклады</button></li>
+        <li><button onclick="showPage('deposits')">Накопительные счета</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Capital Finance. Материалы носят информационный характер.</span>
+    <span>Не является инвестиционной рекомендацией</span>
+  </div>
+</footer>
+ 
